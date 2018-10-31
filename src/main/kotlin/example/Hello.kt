@@ -2,14 +2,31 @@ package example
 
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.RandomStringUtils
+import org.bitcoinj.core.ECKey
 import java.math.BigInteger
 import java.security.SecureRandom
 import java.util.*
 
 
 fun main(args: Array<String>) {
-    userInput()
+    val input = userInput()
+    val privateKey = generatePrivateKey(input)
+
+    println("--------- private key -------------")
+    println(privateKey.size)
+    println(Hex.encodeHex(privateKey))
+
+    val publicKey = generatePublicKey(privateKey)
+    println("--------- public key --------------")
+    println(publicKey.size)
+    println(Hex.encodeHex(publicKey))
+
 //    randomStrings()
+}
+
+fun generatePublicKey(privateKey: ByteArray): ByteArray {
+    val ecKey = ECKey.fromPrivate(privateKey)
+    return ecKey.pubKey
 }
 
 fun randomStrings() {
@@ -21,7 +38,7 @@ fun randomStrings() {
     }
 }
 
-fun userInput() {
+fun userInput(): String {
     while (true) {
         println("Input a long random string(length >= 20), then press enter:")
         val randomInput = System.`in`.bufferedReader().readLine()
@@ -29,10 +46,7 @@ fun userInput() {
             println("too short, try again")
             continue
         } else {
-            val key = generatePrivateKey(randomInput)
-            println(key.size)
-            println(Hex.encodeHex(key))
-            return
+            return randomInput
         }
     }
 }
